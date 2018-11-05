@@ -4,12 +4,16 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Game {
+
     private Piece[][] board = new Piece[8][8];
     private Scanner s = new Scanner(System.in);
     private Color currentTurn = Color.white;
     private Color winner = Color.none;
-    private boolean verbose = false;
+    private boolean verbose;
 
+    public Game(boolean verbose){
+        this.verbose = verbose;
+    }
 
     private void populate(){
         for(int x = 0;x<board.length;x++){
@@ -40,8 +44,8 @@ public class Game {
             }
         }
         if(verbose){
-            System.out.println("Black pieces: " + numBlack);
-            System.out.println("White pieces: " + numWhite);
+            System.out.println("Alive black pieces: " + numBlack);
+            System.out.println("Alive white pieces: " + numWhite);
         }
 
         if (numBlack == 0) {
@@ -118,25 +122,25 @@ public class Game {
 
     private boolean isValidMove(Piece p, int x, int y){
         if (x<0 || x>7 || y<0 || y>7 ){
-            if (verbose) {System.out.println("Selected spot outside board."); }
+            System.out.println("Selected spot outside board.");
             return false;
         }
         if(!isDiag(p.getX(), p.getY(), x, y)){
-            if (verbose) {System.out.println("Not a valid move: non-diagonal."); }
+            System.out.println("Not a valid move: non-diagonal.");
             return false;
         }
         if(spotTaken(x, y)){
-            if (verbose) {System.out.println("Not a valid move: spot taken by another piece.");}
+            System.out.println("Not a valid move: spot taken by another piece.");
             return false;
         }
         if(!p.isKing()){
             if(!isForwardMovement(p, x, y)){
-                if (verbose) {System.out.println("Not a valid move: non-king piece must move forwards.");}
+                System.out.println("Not a valid move: non-king piece must move forwards.");
                 return false;
             }
         }
         if(isJump(p.getX(), p.getY(), x, y) && !isValidJump(p,x,y)){
-            if (verbose) {System.out.println("Not a valid jump - no piece/incorrect color.");}
+            System.out.println("Not a valid jump - no piece/incorrect color.");
             return false;
         }
         if (verbose) {System.out.println("Valid move.");}
@@ -180,13 +184,25 @@ public class Game {
         boolean[] success;
         boolean successfulMove,ate;
         System.out.println("Player " + color + " - input move:" );
-        String[] temp = s.nextLine().replaceAll("\\s+","").split("=>");
-        String[] pieceCoord = temp[0].split(",");
-        String[] targetCoord = temp[1].split(",");
-        int pieceX = Integer.parseInt(pieceCoord[0]);
-        int pieceY = Integer.parseInt(pieceCoord[1]);
-        int targX = Integer.parseInt(targetCoord[0]);
-        int targY = Integer.parseInt(targetCoord[1]);
+        int pieceX,pieceY,targX,targY;
+        String[] pieceCoord,targetCoord;
+        while(true){
+            try{
+                String[] temp = s.nextLine().replaceAll("\\s+","").split("=>");
+                pieceCoord = temp[0].split(",");
+                targetCoord = temp[1].split(",");
+
+                pieceX = Integer.parseInt(pieceCoord[0]);
+                pieceY = Integer.parseInt(pieceCoord[1]);
+                targX = Integer.parseInt(targetCoord[0]);
+                targY = Integer.parseInt(targetCoord[1]);
+                break;
+            }catch(Exception e){
+                System.out.println("Incorrectly formatted input - " + e);
+
+            }
+        }
+        System.out.println("");
 
         Piece selectedPiece = board[pieceX][pieceY];
 
@@ -203,8 +219,10 @@ public class Game {
         success = movePiece(selectedPiece,targX,targY);
         successfulMove = success[0];
         ate = success[1];
+        if (verbose) {System.out.println("\nRESULTS:");}
         if (verbose) {System.out.println("Succesful move: " + successfulMove);}
         if (verbose) {System.out.println("Ate:            " + ate);}
+        System.out.println("");
 
         if(successfulMove && ate && canEat(selectedPiece)){
             printBoard();
@@ -275,8 +293,11 @@ public class Game {
     }
 
     public static void main(String[] args) {
-
-        Game g = new Game();
+        Scanner s = new Scanner(System.in);
+        System.out.println("Verbose logging? [y/n]");
+        boolean v = s.nextLine().equals("y");
+        System.out.println("\n\n");
+        Game g = new Game(v);
         g.play();
 
     }
