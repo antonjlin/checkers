@@ -11,7 +11,7 @@ public class Game {
     private Color winner = Color.none;
     private boolean verbose;
 
-    public Game(boolean verbose){
+    private Game(boolean verbose){
         this.verbose = verbose;
     }
 
@@ -278,7 +278,7 @@ public class Game {
         System.out.println("For example: 1,2 => 2,3");
     }
 
-    public void play(){
+    private void play(){
         populate();
         instruct();
         while(winner == Color.none){

@@ -1,6 +1,5 @@
 package com.company;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 public class Piece {
     private Color color;
@@ -9,7 +8,7 @@ public class Piece {
     private int y;
     private Boolean canEat;
 
-    public Piece(Color color, int x, int y){
+    Piece(Color color, int x, int y){
         this.color = color;
         this.x = x;
         this.y = y;
